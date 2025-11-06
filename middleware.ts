@@ -63,13 +63,22 @@ export async function middleware(request: NextRequest) {
       // Rewrite to appropriate route based on path
       if (url.pathname.startsWith('/admin')) {
         // Admin routes - keep as is but add tenant context
+        supabaseResponse.headers.set('x-tenant-id', tenant.id)
+        supabaseResponse.headers.set('x-tenant-subdomain', tenant.subdomain)
+        supabaseResponse.headers.set('x-tenant-name', tenant.name)
+        return supabaseResponse
+      } else if (url.pathname.startsWith('/club')) {
+        // Member portal routes - keep as is but add tenant context
+        supabaseResponse.headers.set('x-tenant-id', tenant.id)
+        supabaseResponse.headers.set('x-tenant-subdomain', tenant.subdomain)
+        supabaseResponse.headers.set('x-tenant-name', tenant.name)
         return supabaseResponse
       } else {
-        // Public club routes - rewrite to club pages
+        // Root and other routes - rewrite to tenant homepage
         if (url.pathname === '/') {
-          url.pathname = '/club'
-        } else if (!url.pathname.startsWith('/club')) {
-          url.pathname = `/club${url.pathname}`
+          url.pathname = '/tenant-home'
+        } else {
+          url.pathname = `/tenant-home${url.pathname}`
         }
         
         const rewriteResponse = NextResponse.rewrite(url)

@@ -1,30 +1,135 @@
+import { getTenantContext } from '@/src/lib/tenant'
 import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
-export default function ClubPage() {
+export default function MemberDashboard() {
+  const tenant = getTenantContext()
+  
   return (
-    <div className="space-y-16">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Transform Your Fitness Journey
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-              Join our state-of-the-art fitness club and unlock your potential with expert trainers, 
-              modern equipment, and a supportive community.
-            </p>
-            <div className="space-x-4">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                Start Your Free Trial
-              </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-                View Classes
-              </Button>
+    <div className="space-y-8">
+      {/* Dashboard Header */}
+      <div className="bg-card rounded-lg shadow-soft border border-border p-6">
+        <h1 className="text-2xl font-bold text-foreground mb-2">
+          Welcome Back!
+        </h1>
+        <p className="text-muted-foreground">
+          Ready for your workout at {tenant?.name || 'your fitness club'}? Here's what's happening today.
+        </p>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-card rounded-lg shadow-soft border border-border p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-foreground">Book a Class</h3>
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-muted-foreground mb-4 text-sm">
+            Find and book your next workout session from our available classes.
+          </p>
+          <Link href="/club/classes">
+            <Button className="w-full">Browse Classes</Button>
+          </Link>
+        </div>
+
+        <div className="bg-card rounded-lg shadow-soft border border-border p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-foreground">My Bookings</h3>
+            <div className="p-2 bg-emerald-500/10 rounded-lg">
+              <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-muted-foreground mb-4 text-sm">
+            View and manage your upcoming class bookings and workout history.
+          </p>
+          <Link href="/club/bookings">
+            <Button variant="outline" className="w-full">View Bookings</Button>
+          </Link>
+        </div>
+
+        <div className="bg-card rounded-lg shadow-soft border border-border p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-foreground">My Profile</h3>
+            <div className="p-2 bg-violet-500/10 rounded-lg">
+              <svg className="w-5 h-5 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-muted-foreground mb-4 text-sm">
+            Update your profile information, preferences, and membership details.
+          </p>
+          <Link href="/club/profile">
+            <Button variant="outline" className="w-full">Edit Profile</Button>
+          </Link>
+        </div>
+      </div>
+
+      {/* Today's Schedule */}
+      <div className="bg-card rounded-lg shadow-soft border border-border p-6">
+        <h2 className="text-xl font-semibold text-foreground mb-4">Today's Schedule</h2>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 bg-primary/5 rounded-lg border border-primary/20">
+            <div>
+              <h4 className="font-medium text-foreground">Morning Yoga</h4>
+              <p className="text-sm text-muted-foreground">9:00 AM - 10:00 AM • Studio A</p>
+            </div>
+            <div className="text-sm text-primary font-medium">Booked</div>
+          </div>
+          <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border">
+            <div>
+              <h4 className="font-medium text-muted-foreground">HIIT Training</h4>
+              <p className="text-sm text-muted-foreground">6:00 PM - 7:00 PM • Main Gym</p>
+            </div>
+            <Button size="sm" variant="outline">Book Now</Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Membership Status */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-card rounded-lg shadow-soft border border-border p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Membership Status</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Plan</span>
+              <span className="font-medium text-foreground">Premium</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Next Billing</span>
+              <span className="font-medium text-foreground">Dec 6, 2025</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Classes This Month</span>
+              <span className="font-medium text-foreground">12/Unlimited</span>
             </div>
           </div>
         </div>
-      </section>
+
+        <div className="bg-card rounded-lg shadow-soft border border-border p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Quick Stats</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Classes Attended</span>
+              <span className="font-medium text-foreground">47</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Favorite Class</span>
+              <span className="font-medium text-foreground">Yoga Flow</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Member Since</span>
+              <span className="font-medium text-foreground">Jan 2024</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Features Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -2,6 +2,9 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
+-- Enable pgcrypto for gen_random_uuid if uuid-ossp fails
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 -- Create custom types
 CREATE TYPE subscription_status AS ENUM ('active', 'cancelled', 'expired', 'pending');
 CREATE TYPE booking_status AS ENUM ('confirmed', 'cancelled', 'waitlisted', 'completed');
@@ -12,7 +15,7 @@ CREATE TYPE tenant_status AS ENUM ('pending', 'active', 'suspended', 'cancelled'
 -- TENANTS TABLE (Core multi-tenancy)
 -- =============================================
 CREATE TABLE tenants (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(255) NOT NULL,
   subdomain VARCHAR(63) UNIQUE NOT NULL CHECK (subdomain ~ '^[a-z0-9]([a-z0-9\-]*[a-z0-9])?$'),
   status tenant_status DEFAULT 'pending',
@@ -29,7 +32,7 @@ CREATE TABLE tenants (
 -- CLUBS TABLE (Each tenant can have multiple clubs/locations)
 -- =============================================
 CREATE TABLE clubs (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
   slug VARCHAR(100) NOT NULL,
@@ -50,7 +53,7 @@ CREATE TABLE clubs (
 -- SUBSCRIPTION PLANS
 -- =============================================
 CREATE TABLE subscription_plans (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   club_id UUID REFERENCES clubs(id) ON DELETE CASCADE, -- NULL means all clubs
   name VARCHAR(255) NOT NULL,
@@ -70,7 +73,7 @@ CREATE TABLE subscription_plans (
 -- CLUB MEMBERS (Users who join clubs)
 -- =============================================
 CREATE TABLE club_members (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   club_id UUID NOT NULL REFERENCES clubs(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -94,7 +97,7 @@ CREATE TABLE club_members (
 -- MEMBER SUBSCRIPTIONS
 -- =============================================
 CREATE TABLE member_subscriptions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   member_id UUID NOT NULL REFERENCES club_members(id) ON DELETE CASCADE,
   plan_id UUID NOT NULL REFERENCES subscription_plans(id) ON DELETE CASCADE,
@@ -115,7 +118,7 @@ CREATE TABLE member_subscriptions (
 -- CLASS CATEGORIES
 -- =============================================
 CREATE TABLE class_categories (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   club_id UUID NOT NULL REFERENCES clubs(id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
@@ -132,7 +135,7 @@ CREATE TABLE class_categories (
 -- INSTRUCTORS/STAFF
 -- =============================================
 CREATE TABLE instructors (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   club_id UUID NOT NULL REFERENCES clubs(id) ON DELETE CASCADE,
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
@@ -155,7 +158,7 @@ CREATE TABLE instructors (
 -- CLASSES/SESSIONS
 -- =============================================
 CREATE TABLE classes (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   club_id UUID NOT NULL REFERENCES clubs(id) ON DELETE CASCADE,
   category_id UUID NOT NULL REFERENCES class_categories(id) ON DELETE CASCADE,
@@ -183,7 +186,7 @@ CREATE TABLE classes (
 -- CLASS BOOKINGS
 -- =============================================
 CREATE TABLE class_bookings (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   class_id UUID NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
   member_id UUID NOT NULL REFERENCES club_members(id) ON DELETE CASCADE,
@@ -203,7 +206,7 @@ CREATE TABLE class_bookings (
 -- TENANT ADMINS (Users who can manage tenant)
 -- =============================================
 CREATE TABLE tenant_admins (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   email VARCHAR(255) NOT NULL,

@@ -11,17 +11,19 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation will be added here */}
-      <nav className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-background">
+      {/* Navigation */}
+      <nav className="bg-card border-b border-border shadow-soft">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900">ClubManager Admin</h1>
+              <h1 className="text-xl font-semibold text-foreground gradient-text">
+                ClubManager Admin
+              </h1>
             </div>
             <div className="flex items-center space-x-4">
               {/* User menu will be added here */}
-              <span className="text-sm text-gray-700">Welcome, Admin</span>
+              <span className="text-sm text-muted-foreground">Welcome, Admin</span>
             </div>
           </div>
         </div>
